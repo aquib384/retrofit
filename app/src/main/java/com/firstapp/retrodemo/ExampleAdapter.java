@@ -23,7 +23,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.
 
 
     public ExampleAdapter(MainActivity context, ArrayList<FilterName> exampleList) {
-      this.mExampleList=exampleList;
+        this.mExampleList=exampleList;
         this.context = (Context) context;
     }
     @Override
@@ -47,8 +47,8 @@ public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.
 //
 
 
-       // Picasso.with(mContext).load(imageUrl).fit().centerInside().into(holder.mImageView);
-      // Picasso.get().load(imageUrl).fit().into(holder.mImageView);
+        // Picasso.with(mContext).load(imageUrl).fit().centerInside().into(holder.mImageView);
+        // Picasso.get().load(imageUrl).fit().into(holder.mImageView);
     }
     @Override
     public int getItemCount() {

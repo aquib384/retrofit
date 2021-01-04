@@ -5,15 +5,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.security.cert.CertificateException;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -31,25 +36,19 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView textView;
 
     private RecyclerView mRecyclerView;
     private ExampleAdapter mExampleAdapter;
     private ArrayList<FilterName> mExampleList;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRecyclerView=findViewById(R.id.recyclerView);
-        textView=findViewById(R.id.textView);
+        mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
-
 
 
         Gson gson = new GsonBuilder()
@@ -65,13 +64,12 @@ public class MainActivity extends AppCompatActivity {
         JsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
 
 
-        Call<FilterName> call=jsonPlaceHolderApi.getFilterName();
-        call.enqueue(new Callback<FilterName>() {
+        Call<User> call = jsonPlaceHolderApi.getFilterName();
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<FilterName> call, Response<FilterName> response) {
-                if (response.isSuccessful()){
-                    Toast.makeText(MainActivity.this,"Successful",Toast.LENGTH_SHORT).show();
-
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Successful", Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -79,18 +77,19 @@ public class MainActivity extends AppCompatActivity {
 //
 //                   // textView.append(result+"\n");
 //
-                    mExampleList= new ArrayList<>(Arrays.asList(response.body()));
-                    mExampleAdapter=new ExampleAdapter(MainActivity.this,mExampleList);
-                    mRecyclerView.setAdapter(mExampleAdapter);
+                mExampleList = (ArrayList<FilterName>) response.body().getFilterData().get(4).getFilterName();
+                mExampleAdapter = new ExampleAdapter(MainActivity.this,mExampleList);
+                mRecyclerView.setAdapter(mExampleAdapter);
 
             }
 
             @Override
-            public void onFailure(Call<FilterName> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
 
             }
         });
     }
+
 
 
     public static OkHttpClient.Builder getUnsafeOkHttpClient() {
