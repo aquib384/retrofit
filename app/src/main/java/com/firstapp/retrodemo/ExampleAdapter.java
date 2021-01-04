@@ -9,11 +9,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firstapp.retrodemo.FilterName;
+import com.firstapp.retrodemo.model.FilterName;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.ExampleAdapter.ExampleViewHolder> {
 
