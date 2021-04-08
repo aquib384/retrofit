@@ -18,34 +18,25 @@
 
 
             <TextView
-                android:id="@+id/id"
+                android:id="@+id/region"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
+                android:hint="STATE"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/filtergrpid"
+                android:id="@+id/totalInfected"
+                android:hint="Total Cases"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
                 android:textSize="20sp" />
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/newInfected"
+                android:hint="New Cases"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="23sp" />
 
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="200dp"
-                android:layout_height="200dp" />
-
-
-            <ImageView
-                android:id="@+id/imageBus"
-                android:layout_width="200dp"
-                android:layout_height="200dp" />
 
 
 

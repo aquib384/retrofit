@@ -22,44 +22,31 @@ public class FilterName {
     @Expose
     private String busImage;
 
-    public String getId() {
-        return id;
+    public FilterName(String id, String filterGroupId, String name, String image, String busImage) {
+        this.id = id;
+        this.filterGroupId = filterGroupId;
+        this.name = name;
+        this.image = image;
+        this.busImage = busImage;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getId() {
+        return id;
     }
 
     public String getFilterGroupId() {
         return filterGroupId;
     }
 
-    public void setFilterGroupId(String filterGroupId) {
-        this.filterGroupId = filterGroupId;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getImage() {
         return image;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public String getBusImage() {
         return busImage;
     }
-
-    public void setBusImage(String busImage) {
-        this.busImage = busImage;
-    }
-
 }

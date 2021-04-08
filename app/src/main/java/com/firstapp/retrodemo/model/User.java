@@ -23,44 +23,31 @@ public class User {
     @Expose
     private List<Detail> details = null;
 
-    public String getResponseCode() {
-        return responseCode;
+    public User(String responseCode, Response response, List<Static> statics, List<FilterDatum> filterData, List<Detail> details) {
+        this.responseCode = responseCode;
+        this.response = response;
+        this.statics = statics;
+        this.filterData = filterData;
+        this.details = details;
     }
 
-    public void setResponseCode(String responseCode) {
-        this.responseCode = responseCode;
+    public String getResponseCode() {
+        return responseCode;
     }
 
     public Response getResponse() {
         return response;
     }
 
-    public void setResponse(Response response) {
-        this.response = response;
-    }
-
     public List<Static> getStatics() {
         return statics;
-    }
-
-    public void setStatics(List<Static> statics) {
-        this.statics = statics;
     }
 
     public List<FilterDatum> getFilterData() {
         return filterData;
     }
 
-    public void setFilterData(List<FilterDatum> filterData) {
-        this.filterData = filterData;
-    }
-
     public List<Detail> getDetails() {
         return details;
     }
-
-    public void setDetails(List<Detail> details) {
-        this.details = details;
-    }
-
 }
