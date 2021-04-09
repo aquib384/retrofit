@@ -1,50 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="150dp"
         android:layout_margin="15dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="20dp"
             android:orientation="vertical">
 
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="120dp"
+                android:layout_height="150dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.47"
+                app:srcCompat="@drawable/mask" />
+
             <TextView
                 android:id="@+id/region"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="STATE"
-                android:textSize="20sp" />
+                android:layout_width="244dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="serif-monospace"
+                android:gravity="start"
+                android:padding="5dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/totalInfected"
-                android:hint="Total Cases"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:layout_width="243dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="serif-monospace"
+                android:gravity="start"
+                android:padding="5dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/newInfected"
-                android:hint="New Cases"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="23sp" />
+                android:layout_width="243dp"
+                android:layout_height="37dp"
+                android:layout_marginTop="96dp"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="serif-monospace"
+                android:gravity="start"
+                android:padding="5dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-
-
-
-
-
-
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

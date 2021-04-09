@@ -1,12 +1,19 @@
 package com.firstapp.retrodemo;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,8 +21,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import android.app.SearchManager;
@@ -28,7 +37,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.security.cert.CertificateException;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -44,17 +65,22 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements ExampleAdapter.ContactsAdapterListener{
+public class MainActivity extends AppCompatActivity {
     TextView textView;
-
+    public static final String MyPREFERENCES = "MyPrefs";
+    public static final String KEY_TIME = "time";
+    public static final String FIRST_TIME = "firsttime";
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
     androidx.appcompat.widget.SearchView searchView;
-
     private RecyclerView mRecyclerView;
     private ExampleAdapter mExampleAdapter;
     private ArrayList<RegionDatum> mExampleList;
+    DataBaseHelper db;
+    ArrayList<RegionDatum> exampleList;
 
 
-
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,24 +89,100 @@ public class MainActivity extends AppCompatActivity implements ExampleAdapter.Co
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mExampleList = new ArrayList<RegionDatum>();
+        pref = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        editor = pref.edit();
+        exampleList = new ArrayList<>();
         whiteNotificationBar(mRecyclerView);
-        getData();
+        db = new DataBaseHelper(this);
+
+        checkSession();
+
+
+    }
+
+    private void getTimeDifference() {
+        Date date=new Date(pref.getString(KEY_TIME,"jj"));
+
+        Date currentTime = Calendar.getInstance().getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentTime);
+        boolean result= date.after(currentTime);
+        if (result==false){
+            editor.clear();
+            getData();
+        }
+        else{
+            Timer timer = new Timer ();
+            TimerTask hourlyTask = new TimerTask () {
+                @Override
+                public void run () {
+                    // your code here...
+                }
+            };
+
+// schedule the task to run starting now and then every hour...
+            timer.schedule (hourlyTask, 0l, 1000*60*60);
+
+
+        }
+
+
+        }
+
+
+
+
+
+    private boolean isFirstSession() {
+        return pref.getBoolean(FIRST_TIME,false);
+    }
+
+    private void checkSession() {
+        if (isFirstSession()){
+            getLocalResponse();
+
+        }
+
+        else{
+            getSession();
+            getData();
+        }
+
+    }
+
+
+
+
+    private void getSession() {
+        Date currentTime = Calendar.getInstance().getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentTime);
+        calendar.add(Calendar.HOUR, 2);
+        String val = calendar.getTime().toString();
+        editor.putBoolean(FIRST_TIME,true);
+        editor.putString(KEY_TIME, val);
+        editor.commit();
+    }
+
+    private void getLocalResponse() {
+
+        exampleList= db.getData();
+        mExampleAdapter = new ExampleAdapter(MainActivity.this, exampleList);
+        mRecyclerView.setAdapter(mExampleAdapter);
+        mExampleAdapter.notifyDataSetChanged();
+        Toast.makeText(this,"From local database",Toast.LENGTH_SHORT).show();
+        getTimeDifference();
 
     }
 
     private void getData() {
-
-
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
-
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.apify.com/v2/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(getUnsafeOkHttpClient().build())
                 .build();
-
-
         CovidApi covidApi = retrofit.create(CovidApi.class);
 
 
@@ -92,10 +194,14 @@ public class MainActivity extends AppCompatActivity implements ExampleAdapter.Co
                 String region;
                 int totalInfected;
                 int newInfected;
+                ProgressDialog pd=new ProgressDialog(MainActivity.this);
+                pd.setMessage("Fetching from Api...");
+                pd.show();
 
 
                 if (response.isSuccessful()) {
-                    //Toast.makeText(MainActivity.this, "Successful", Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                    Toast.makeText(MainActivity.this, "From Api", Toast.LENGTH_SHORT).show();
 
                     for (int i = 0; i < response.body().getRegionData().size(); i++) {
                         Log.d("Aquibtest", String.valueOf(user.getRegionData().get(i).getNewInfected()));
@@ -107,18 +213,17 @@ public class MainActivity extends AppCompatActivity implements ExampleAdapter.Co
 
 
                         mExampleList.add(new RegionDatum(region,totalInfected,newInfected));
-
-
-
-
-
+                        db.addData(region,totalInfected,newInfected);
                     }
+
 
                     mExampleAdapter = new ExampleAdapter(MainActivity.this, mExampleList);
                     mRecyclerView.setAdapter(mExampleAdapter);
                     mExampleAdapter.notifyDataSetChanged();
 
                 }
+
+
             }
 
 
@@ -128,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements ExampleAdapter.Co
 
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            getSession();
+        }
     }
 
 
@@ -199,9 +308,7 @@ public class MainActivity extends AppCompatActivity implements ExampleAdapter.Co
 
            @Override
            public boolean onQueryTextChange(String query) {
-             if (query.isEmpty()){
-                 getData();
-             }
+
                mExampleAdapter.getFilter().filter(query);
                return false;
            }
@@ -244,12 +351,8 @@ public class MainActivity extends AppCompatActivity implements ExampleAdapter.Co
         }
     }
 
-    @Override
-    public void onContactSelected(RegionDatum regionDatum) {
-        Toast.makeText(getApplicationContext(), "Selected: " + regionDatum.getRegion(), Toast.LENGTH_LONG).show();
-    }
 
 
 
 
-    }
+}

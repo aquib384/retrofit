@@ -10,10 +10,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firstapp.retrodemo.model.FilterName;
 import com.firstapp.retrodemo.model.RegionDatum;
-import com.firstapp.retrodemo.model.State;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +18,7 @@ import java.util.List;
 public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.ExampleAdapter.ExampleViewHolder> {
 
     private ArrayList<RegionDatum> mExampleList;
+    private List<RegionDatum> exampleListFull;
     Context context;
 
 
@@ -28,6 +26,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.
     public ExampleAdapter(Context context, ArrayList<RegionDatum> exampleList) {
         this.mExampleList=exampleList;
         this.context = (Context) context;
+        exampleListFull = new ArrayList<>(exampleList);
     }
     @Override
     public ExampleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -53,6 +52,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.
         return mExampleList.size();
     }
     public class ExampleViewHolder extends RecyclerView.ViewHolder {
+
         public TextView region;
         public TextView totalInfected;
         public TextView newInfected;
@@ -65,44 +65,39 @@ public class ExampleAdapter extends RecyclerView.Adapter<com.firstapp.retrodemo.
 
         }
 
+
+
     }
 
     public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
-                    mExampleList = mExampleList;
-                } else {
-                    List<RegionDatum> filteredList = new ArrayList<>();
-                    for (RegionDatum row : mExampleList) {
+        return exampleFilter;
+    }
 
-                        // name match condition. this might differ depending on your requirement
-                        // here we are looking for name or phone number match
-                        if (row.getRegion().toLowerCase().contains(charString.toLowerCase())) {
-                            filteredList.add(row);
-                        }
+    private Filter exampleFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<RegionDatum> filteredList = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(exampleListFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (RegionDatum item : exampleListFull) {
+                    if (item.getRegion().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
                     }
-
-                    mExampleList = (ArrayList<RegionDatum>) filteredList;
                 }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = mExampleList;
-                return filterResults;
             }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                mExampleList = (ArrayList<RegionDatum>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mExampleList.clear();
+            mExampleList.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
     }
 
-    public interface ContactsAdapterListener {
-        void onContactSelected(RegionDatum regionDatum);
-    }
 
-}
