@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<RegionDatum> mExampleList;
     DataBaseHelper db;
     ArrayList<RegionDatum> exampleList;
+    ProgressDialog pd;
+    Handler handler;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -94,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
         exampleList = new ArrayList<>();
         whiteNotificationBar(mRecyclerView);
         db = new DataBaseHelper(this);
+        pd=new ProgressDialog(this);
+
 
         checkSession();
 
@@ -109,7 +113,20 @@ public class MainActivity extends AppCompatActivity {
         boolean result= date.after(currentTime);
         if (result==false){
             editor.clear();
-            getData();
+            exampleList.clear();
+            android.os.Handler handler=new android.os.Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pd.setMessage("Loading....");
+                    pd.show();
+                    getData();
+
+
+
+                }
+            },2000);
+
         }
         else{
             Timer timer = new Timer ();
@@ -157,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         Date currentTime = Calendar.getInstance().getTime();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentTime);
-        calendar.add(Calendar.HOUR, 2);
+        calendar.add(Calendar.MINUTE,2);
         String val = calendar.getTime().toString();
         editor.putBoolean(FIRST_TIME,true);
         editor.putString(KEY_TIME, val);
@@ -170,7 +187,9 @@ public class MainActivity extends AppCompatActivity {
         mExampleAdapter = new ExampleAdapter(MainActivity.this, exampleList);
         mRecyclerView.setAdapter(mExampleAdapter);
         mExampleAdapter.notifyDataSetChanged();
-        Toast.makeText(this,"From local database",Toast.LENGTH_SHORT).show();
+        if (pref.getBoolean(FIRST_TIME,false)==false){
+            Toast.makeText(this,"from local database",Toast.LENGTH_SHORT).show();
+        }
         getTimeDifference();
 
     }
@@ -194,9 +213,8 @@ public class MainActivity extends AppCompatActivity {
                 String region;
                 int totalInfected;
                 int newInfected;
-                ProgressDialog pd=new ProgressDialog(MainActivity.this);
-                pd.setMessage("Fetching from Api...");
-                pd.show();
+
+
 
 
                 if (response.isSuccessful()) {
@@ -234,9 +252,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            getSession();
-        }
+
     }
 
 

@@ -70,7 +70,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                values.put(KEY_TOTAL_INFECTED, total_infected);
                values.put(KEY_NEW_INFECTED, new_infected);
                // Inserting Row
-               dbid =  db.insert(TABLE_NAME, null, values);
+               dbid =  db.replace(TABLE_NAME, null, values);
                Log.d("hhhhhhhhhhhhh", "inserted" + values);
                db.close();
 
