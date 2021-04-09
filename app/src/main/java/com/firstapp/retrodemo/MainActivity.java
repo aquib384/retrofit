@@ -125,20 +125,25 @@ public class MainActivity extends AppCompatActivity {
 
 
                 }
-            },2000);
+            },1000);
 
         }
         else{
-            Timer timer = new Timer ();
-            TimerTask hourlyTask = new TimerTask () {
+            android.os.Handler handler=new android.os.Handler();
+            handler.postDelayed(new Runnable() {
                 @Override
-                public void run () {
-                    // your code here...
+                public void run() {
+                    Toast.makeText(getApplicationContext(),"from local database",Toast.LENGTH_SHORT).show();
+
+
+
+
                 }
-            };
+            },1000);
+
 
 // schedule the task to run starting now and then every hour...
-            timer.schedule (hourlyTask, 0l, 1000*60*60);
+
 
 
         }
@@ -240,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                     mExampleAdapter.notifyDataSetChanged();
 
                 }
+                getSession();
 
 
             }
