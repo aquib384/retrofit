@@ -13,8 +13,10 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<RegionDatum> exampleList;
     ProgressDialog pd;
     Handler handler;
+    MyReceiver myReceiver;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         whiteNotificationBar(mRecyclerView);
         db = new DataBaseHelper(this);
         pd=new ProgressDialog(this);
+        myReceiver=new MyReceiver();
 
 
         checkSession();
@@ -373,8 +377,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(myReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
-
-
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(myReceiver);
+    }
 }
